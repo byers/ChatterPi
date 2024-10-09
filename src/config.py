@@ -35,6 +35,12 @@ def update():
 	global EYES_PIN
 	global TRIGGER_OUT_PIN
 
+	global MQTT_HOST
+	global MQTT_PORT
+	global MQTT_TOPIC
+	global MQTT_USER
+	global MQTT_PWD
+
 	cfg.read('config.ini')
 
 	SERVO_MIN = int(cfg['SERVO']['SERVO_MIN'])
@@ -62,4 +68,10 @@ def update():
 	PIR_PIN = int(cfg['PINS']['PIR_PIN'])
 	EYES_PIN = int(cfg['PINS']['EYES_PIN'])
 	TRIGGER_OUT_PIN = int(cfg['PINS']['TRIGGER_OUT_PIN'])
+
+	MQTT_HOST = cfg['MQTT']['HOST']
+	MQTT_PORT = int(cfg['MQTT']['PORT'])
+	MQTT_TOPIC = cfg['MQTT']['TOPIC']
+	MQTT_USER = cfg['MQTT']['USER']
+	MQTT_PWD = cfg['MQTT']['PWD']
 
