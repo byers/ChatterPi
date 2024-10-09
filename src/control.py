@@ -4,18 +4,22 @@ Updated to fix bad calls to audio.play_audio Sat Dec 26 2020
 @author: Mike McGurrin
 """
 
-from gpiozero.pins.pigpio import PiGPIOFactory
-from gpiozero import Device, Button, DigitalOutputDevice
-Device.pin_factory = PiGPIOFactory()
+try:
+    from gpiozero.pins.pigpio import PiGPIOFactory
+    from gpiozero import Device, Button, DigitalOutputDevice
+    Device.pin_factory = PiGPIOFactory()
+except:
+    print("Unable to setup Pi GPIO pin factory!")
 
 import time
 
 import config as c
 import tracks as t
 import audio
+import sys
 
 tracks = t.Tracks()
-a = audio.AUDIO()
+a = audio.AUDIO(sys.modules[__name__])
 
 pir = Button(c.PIR_PIN, pull_up=False)
 triggerOut = DigitalOutputDevice(c.TRIGGER_OUT_PIN)
