@@ -27,17 +27,18 @@ client.connect(c.MQTT_HOST, c.MQTT_PORT, 60)
 # Setup servo to use with audio processor
 jaw_servo = angularServoKit.AngularServo(0, 
     min_angle=0,
-    max_angle=45, initial_angle=None,
+    max_angle=30, initial_angle=None,
     min_pulse_width=c.SERVO_MIN/(1*10**6),
     max_pulse_width=c.SERVO_MAX/(1*10**6))
 
 # Set defaults for ServoKit
-jaw_servo.min_value = 0 
+jaw_servo.min_value = 0
 jaw_servo.value_range = 1
-jaw_servo.mqtt = client 
+jaw_servo.mqtt = client
 
 client.loop_start()
 time.sleep(1)
 a = audio.AUDIO(None, jaw_servo)
+a.negate_angle(True)
 a.play_vocal_track("./vocals/v01.wav")
 client.loop_stop()

@@ -36,6 +36,9 @@ class AUDIO:
             print("Using user assigned jaw servo!")
             self.jaw = jaw_servo
         self.bp = BPFilter()
+
+        # Negate the output jaw angle for some cases
+        self._negate_angle = False
         # flipping MIN_ANGLE and MAX_ANGLE in settings changes direction of servo movement BUT
         # must use unflipped values in calculating the amount of jaw movement
         if c.MIN_ANGLE > c.MAX_ANGLE:
@@ -49,6 +52,9 @@ class AUDIO:
 
     def set_control(self, contoller):
         self._control = controller
+
+    def negate_angle(self, flag):
+        self._negate_angle = bool(flag)
         
     def update_jaw(self, jaw_servo = None):
         if jaw_servo == None:
@@ -109,7 +115,9 @@ class AUDIO:
                     jawTarget = self.j_min + jawStep
                 else:
                     jawTarget = self.j_min   
-            return -jawTarget
+            if self._negate_angle:
+                return -jawTarget
+            return jawTarget
         
         def overwrite(data, channels):
             """ overwrites left channel onto right channel for playback"""
