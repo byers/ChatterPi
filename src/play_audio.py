@@ -1,7 +1,6 @@
 import time
 import audio
 import config as c
-import angularServoKit
 
 import paho.mqtt.client as mqtt
 
@@ -24,16 +23,31 @@ print("MQTT: %s:%d, %s:%s" % (c.MQTT_HOST, c.MQTT_PORT, c.MQTT_USER, c.MQTT_PWD)
 client.username_pw_set(c.MQTT_USER, c.MQTT_PWD)
 client.connect(c.MQTT_HOST, c.MQTT_PORT, 60)
 
-# Setup servo to use with audio processor
-jaw_servo = angularServoKit.AngularServo(0, 
-    min_angle=0,
-    max_angle=30, initial_angle=None,
-    min_pulse_width=c.SERVO_MIN/(1*10**6),
-    max_pulse_width=c.SERVO_MAX/(1*10**6))
+jaw_servo = None
+if c.SERVO_STYLE.lower() == 'servokit':
+    import servoKit
+    print("Using ServoKit!")
+    # Setup servo to use with audio processor
+    jaw_servo = servoKit.AngularServo(0,
+        min_angle=c.MIN_ANGLE,
+        max_angle=-c.MAX_ANGLE, initial_angle=None,
+        min_pulse_width=c.SERVO_MIN/(1*10**6),
+        max_pulse_width=c.SERVO_MAX/(1*10**6))
+elif c.SERVO_STYLE.lower() == 'pololu':
+    import pololu
+    print("Using Pololu!")
+    jaw_servo = pololu.AngularServo(0,
+        min_angle=c.MIN_ANGLE,
+        max_angle=-c.MAX_ANGLE, initial_angle=None,
+        min_pulse_width=c.SERVO_MIN/(1*10**6),
+        max_pulse_width=c.SERVO_MAX/(1*10**6))
+    # Set Nod to level
+    jaw_servo._controller.setTarget(6,1250*4)
+    # Turn on PWM LED
+    jaw_servo._controller.setTarget(11,2000*4)
+    #jaw_servo._controller.runScriptSub(0)
 
-# Set defaults for ServoKit
-jaw_servo.min_value = 0
-jaw_servo.value_range = 1
+# Set MQTT client for publishing
 jaw_servo.mqtt = client
 
 client.loop_start()
@@ -42,3 +56,10 @@ a = audio.AUDIO(None, jaw_servo)
 a.negate_angle(True)
 a.play_vocal_track("./vocals/v01.wav")
 client.loop_stop()
+
+if c.SERVO_STYLE.lower() == 'servokit':
+    print("Cleanup ServoKit")
+elif c.SERVO_STYLE.lower() == 'pololu':
+    print("Cleanup Pololu")
+    jaw_servo._controller.setTarget(11,4000)
+    jaw_servo._controller.setTarget(0,0)

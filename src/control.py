@@ -19,7 +19,26 @@ import audio
 import sys
 
 tracks = t.Tracks()
-a = audio.AUDIO(sys.modules[__name__])
+if c.SERVO_STYLE.lower() == "pololu":
+    import pololu
+    jaw_servo = pololu.AngularServo(0,
+        min_angle=c.MIN_ANGLE,
+        max_angle=-c.MAX_ANGLE, initial_angle=None,
+        min_pulse_width=c.SERVO_MIN/(1*10**6),
+        max_pulse_width=c.SERVO_MAX/(1*10**6))
+    a = audio.AUDIO(sys.modules[__name__], jaw_servo)
+    a.negate_angle(True)
+elif c.SERVO_STYLE.lower() == "servokit":
+    import servoKit
+    jaw_servo = servoKit.AngularServo(0,
+        min_angle=c.MIN_ANGLE,
+        max_angle=-c.MAX_ANGLE, initial_angle=None,
+        min_pulse_width=c.SERVO_MIN/(1*10**6),
+        max_pulse_width=c.SERVO_MAX/(1*10**6))
+    a = audio.AUDIO(sys.modules[__name__], jaw_servo)
+    a.negate_angle(True)
+else
+    a = audio.AUDIO(sys.modules[__name__])
 
 pir = Button(c.PIR_PIN, pull_up=False)
 triggerOut = DigitalOutputDevice(c.TRIGGER_OUT_PIN)
