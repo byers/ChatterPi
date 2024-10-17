@@ -197,10 +197,15 @@ class Servo:
             self._value = value
 
             # Map from -1 to 1 to 0 to 1
-            fraction = round((value - self._min_value) / self._value_range, 3)
+            fraction = round((value - self._min_value) / self._value_range, 5)
             #self._servo.fraction = (value - self._min_value) / self._value_range
             print("Value: %f" % (fraction))
             self._servo.fraction = fraction
+
+            print("Pulse Width: %f" %
+                (fraction * (self.max_pulse_width - self.min_pulse_width) + self.min_pulse_width)
+            )
+
 
             # Calculate the duty cycle
             #print("Duty Cycle: %f" % (

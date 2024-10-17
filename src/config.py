@@ -9,6 +9,7 @@ from configparser import ConfigParser
 # Initialize constants from config.ini
 cfg = ConfigParser()
 def update():
+	global SERVO_STYLE
 	global SERVO_MIN
 	global SERVO_MAX
 	global MIN_ANGLE
@@ -43,6 +44,7 @@ def update():
 
 	cfg.read('config.ini')
 
+	SERVO_STYLE = cfg['SERVO']['STYLE']
 	SERVO_MIN = int(cfg['SERVO']['SERVO_MIN'])
 	SERVO_MAX = int(cfg['SERVO']['SERVO_MAX'])
 	MIN_ANGLE = int(cfg['SERVO']['MIN_ANGLE'])
