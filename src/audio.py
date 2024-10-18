@@ -53,6 +53,15 @@ class AUDIO:
     def set_control(self, contoller):
         self._control = controller
 
+    def set_servo_control(self, controller):
+        self._servo_control = controller
+
+    def set_pre_ambient(self, preFunc):
+        self._pre_ambient = preFunc
+
+    def set_post_ambient(self, postFunc):
+        self._post_ambient = postFunc
+
     def negate_angle(self, flag):
         self._negate_angle = bool(flag)
         
@@ -216,11 +225,17 @@ class AUDIO:
             self.stream.stop_stream()
             self.stream.close()
             wf.close()
+            if self._servo_control and self._post_ambient:
+                print("Running Post Ambient function")
+                self._post_ambient(self._servo_control)
             
         def cleanup():
             normalEnd()
             self.p.terminate()
             self.jaw.close()
+            if self._servo_control and self._post_ambient:
+                print("Running Post Ambient function")
+                self._post_ambient(self._servo_control)
             
         try:
             atexit.register(cleanup)                      
@@ -234,6 +249,10 @@ class AUDIO:
                         output=True,
                         stream_callback=ambientCallback)  
 
+            if self._servo_control and self._pre_ambient:
+                print("Running Pre Ambient function")
+                self._pre_ambient(self._servo_control)
+            print("Playing Ambient...", )
             while self.stream.is_active():           
                 time.sleep(0.1)
                 # interrupt and play vocal track, moving jaw
@@ -246,6 +265,7 @@ class AUDIO:
                         if time.time() > self._control.trigger_time:
                             self._control.ambient_interrupt = True
                             break
+            print("Ambient Done.")
             normalEnd()
                     
         except (KeyboardInterrupt, SystemExit):

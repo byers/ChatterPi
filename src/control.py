@@ -36,6 +36,11 @@ if c.SERVO_STYLE.lower() == "pololu":
         max_pulse_width=c.SERVO_MAX/(1*10**6),
         pin_factory = factory)
     a = audio.AUDIO(sys.modules[__name__], jaw_servo)
+
+    # Danger Will Robinson- Specific to controller and servo!
+    a.set_servo_control(factory._controller)
+    a.set_pre_ambient(pololu.pre_ambient)
+    a.set_post_ambient(pololu.post_ambient)
     a.negate_angle(True)
 elif c.SERVO_STYLE.lower() == "servokit":
     import servoKit

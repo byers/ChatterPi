@@ -2,6 +2,13 @@ from maestro import Controller
 import config as c
 from dataclasses import dataclass
 
+# Function for callbacks before and after ambient sound starts
+def pre_ambient(controller):
+   controller.runScriptSub(0)
+
+def post_ambient(controller):
+   controller.stopScript()
+   controller.setTarget(2, 1500*4)
 
 @dataclass
 class ServoLink:
