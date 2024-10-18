@@ -14,11 +14,11 @@ import config as c
 
 c.update()
 try:
-    from gpiozero.pins.pigpio import PiGPIOFactory
+    #from gpiozero.pins.pigpio import PiGPIOFactory
     from gpiozero import Device, AngularServo
-    Device.pin_factory = PiGPIOFactory()
+    #Device.pin_factory = PiGPIOFactory()
 except:
-    print("Unable to setup PiGPIO pin factory!")
+    print("Unable to setup Pi GPIO pin factory: Audio!")
 
 class AUDIO:
     def __init__(self, control = None, jaw_servo = None):

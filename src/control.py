@@ -5,11 +5,11 @@ Updated to fix bad calls to audio.play_audio Sat Dec 26 2020
 """
 
 try:
-    from gpiozero.pins.pigpio import PiGPIOFactory
+    #from gpiozero.pins.pigpio import PiGPIOFactory
     from gpiozero import Device, Button, DigitalOutputDevice
-    Device.pin_factory = PiGPIOFactory()
+    #Device.pin_factory = PiGPIOFactory()
 except:
-    print("Unable to setup Pi GPIO pin factory!")
+    print("Unable to setup Pi GPIO pin factory: Control!")
 
 import time
 
@@ -19,30 +19,34 @@ import audio
 import sys
 
 tracks = t.Tracks()
+
+# Default to GPIO pins
+pir = Button(c.PIR_PIN, pull_up=False)
+triggerOut = DigitalOutputDevice(c.TRIGGER_OUT_PIN)
+eyesPin = DigitalOutputDevice(c.EYES_PIN)
+
 if c.SERVO_STYLE.lower() == "pololu":
     import pololu
-    jaw_servo = pololu.AngularServo(0,
+    factory = pololu.Factory()
+    eyesPin = pololu.EyesPinAdapter(factory.create(c.EYES_PIN))
+    jaw_servo = pololu.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
-        max_pulse_width=c.SERVO_MAX/(1*10**6))
+        max_pulse_width=c.SERVO_MAX/(1*10**6),
+        pin_factory = factory)
     a = audio.AUDIO(sys.modules[__name__], jaw_servo)
     a.negate_angle(True)
 elif c.SERVO_STYLE.lower() == "servokit":
     import servoKit
-    jaw_servo = servoKit.AngularServo(0,
+    jaw_servo = servoKit.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
         max_pulse_width=c.SERVO_MAX/(1*10**6))
     a = audio.AUDIO(sys.modules[__name__], jaw_servo)
     a.negate_angle(True)
-else
-    a = audio.AUDIO(sys.modules[__name__])
 
-pir = Button(c.PIR_PIN, pull_up=False)
-triggerOut = DigitalOutputDevice(c.TRIGGER_OUT_PIN)
-eyesPin = DigitalOutputDevice(c.EYES_PIN)
 ambient_interrupt = False   # set to True when timer goes off or PIR triggered
 trigger_time = time.time()
 
