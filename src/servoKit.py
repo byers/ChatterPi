@@ -1,6 +1,13 @@
 from adafruit_servokit import ServoKit
 import config as c
 
+class Factory:
+    def __init__(self, nchannels=16):
+        self._controller = ServoKit(channels=nchannels)
+
+    def create(self, pin):
+        return self._controller.servo[pin]
+
 class Servo:
     """
     Use Adafruit ServoKit for driving 8-16 servo control board.
@@ -83,9 +90,8 @@ class Servo:
         #self._min_value = 0 
         #self._value_range = 1
 
-        self._pin = pin
-        self._kit = ServoKit(channels=16)
-        self._servo = self._kit.servo[pin]
+        self._pin = int(pin)
+        self._servo = pin_factory.create(self._pin)
         self._servo.set_pulse_width_range(min_pulse_width*1000000, max_pulse_width*1000000)
         self._mqtt = None
 
@@ -198,14 +204,12 @@ class Servo:
 
             # Map from -1 to 1 to 0 to 1
             fraction = round((value - self._min_value) / self._value_range, 5)
-            #self._servo.fraction = (value - self._min_value) / self._value_range
             print("Value: %f" % (fraction))
             self._servo.fraction = fraction
 
             print("Pulse Width: %f" %
                 (fraction * (self.max_pulse_width - self.min_pulse_width) + self.min_pulse_width)
             )
-
 
             # Calculate the duty cycle
             #print("Duty Cycle: %f" % (
@@ -317,7 +321,7 @@ class AngularServo(Servo):
     """
     def __init__(self, pin=None, *, initial_angle=0.0, min_angle=-90,
                  max_angle=90, min_pulse_width=1/1000, max_pulse_width=2/1000,
-                 frame_width=20/1000, pin_factory=None):
+                 frame_width=20/1000, pin_factory=Factory()):
         self._min_angle = min_angle
         self._angular_range = max_angle - min_angle
         self._last_angle = None
@@ -333,7 +337,7 @@ class AngularServo(Servo):
         super().__init__(pin, initial_value=initial_value,
                          min_pulse_width=min_pulse_width,
                          max_pulse_width=max_pulse_width,
-                         frame_width=frame_width, pin_factory=pin_factory)
+                         frame_width=frame_width, pin_factory=Factory())
 
     @property
     def min_angle(self):

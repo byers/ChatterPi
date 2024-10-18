@@ -23,29 +23,33 @@ print("MQTT: %s:%d, %s:%s" % (c.MQTT_HOST, c.MQTT_PORT, c.MQTT_USER, c.MQTT_PWD)
 client.username_pw_set(c.MQTT_USER, c.MQTT_PWD)
 client.connect(c.MQTT_HOST, c.MQTT_PORT, 60)
 
+factory = None
 jaw_servo = None
 if c.SERVO_STYLE.lower() == 'servokit':
     import servoKit
     print("Using ServoKit!")
+    factory = servoKit.Factory()
     # Setup servo to use with audio processor
-    jaw_servo = servoKit.AngularServo(0,
+    jaw_servo = servoKit.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
-        max_pulse_width=c.SERVO_MAX/(1*10**6))
+        max_pulse_width=c.SERVO_MAX/(1*10**6),
+        pin_factory = factory)
 elif c.SERVO_STYLE.lower() == 'pololu':
     import pololu
     print("Using Pololu!")
-    jaw_servo = pololu.AngularServo(0,
+    factory = pololu.Factory()
+    jaw_servo = pololu.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
-        max_pulse_width=c.SERVO_MAX/(1*10**6))
+        max_pulse_width=c.SERVO_MAX/(1*10**6),
+        pin_factory=factory)
     # Set Nod to level
-    jaw_servo._controller.setTarget(6,1250*4)
+    factory._controller.setTarget(6,1250*4)
     # Turn on PWM LED
-    jaw_servo._controller.setTarget(11,2000*4)
-    #jaw_servo._controller.runScriptSub(0)
+    factory._controller.setTarget(11,2000*4)
 
 # Set MQTT client for publishing
 jaw_servo.mqtt = client
@@ -61,5 +65,5 @@ if c.SERVO_STYLE.lower() == 'servokit':
     print("Cleanup ServoKit")
 elif c.SERVO_STYLE.lower() == 'pololu':
     print("Cleanup Pololu")
-    jaw_servo._controller.setTarget(11,4000)
-    jaw_servo._controller.setTarget(0,0)
+    factory._controller.setTarget(11,4000)
+    factory._controller.setTarget(0,0)

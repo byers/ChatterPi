@@ -1,5 +1,32 @@
 from maestro import Controller
 import config as c
+from dataclasses import dataclass
+
+
+@dataclass
+class ServoLink:
+    controller: Controller
+    pin: int
+
+class Factory:
+    def __init__(self, port = "/dev/ttyACM0"):
+        self._controller = Controller(port)
+
+    def create(self, index):
+        return ServoLink(self._controller, index)
+
+class EyesPinAdapter:
+    def __init__(self, link):
+        self._link = link
+
+    def off(self):
+        self._link.controller.setTarget(self._link.pin, 4000) 
+
+    def on(self):
+        self._link.controller.setTarget(self._link.pin, 8000) 
+
+    def close(self):
+        print("Close eyes!")
 
 class Servo:
     """
@@ -79,8 +106,8 @@ class Servo:
         self._min_value = -1
         self._value_range = 2
 
-        self._pin = pin
-        self._controller = Controller()
+        self._pin = int(pin)
+        self._servo = pin_factory.create(self._pin) 
         # This is done with Pololu control panel
         #self._servo.set_pulse_width_range(min_pulse_width*1000000, max_pulse_width*1000000)
         self._mqtt = None
@@ -189,6 +216,7 @@ class Servo:
         if value is None:
             #self.pwm_device.pin.frequency = None
             self._value = None
+            self._servo.controller.setTarget(self._servo.pin, 0)
         elif -1 <= value <= 1:
             self._value = value
 
@@ -199,7 +227,8 @@ class Servo:
             # Send command to servo controller in quarter microseconds
             pulse_width = (fraction * (self.max_pulse_width - self.min_pulse_width) +  self.min_pulse_width) * 4 * 1000000
             print("Pulse Width (quarter Microseconds): %d" % (pulse_width))
-            self._controller.setTarget(int(self._pin), int(pulse_width))
+            #self._servo.setTarget(self._pin, int(pulse_width))
+            self._servo.controller.setTarget(self._servo.pin, int(pulse_width))
 
             # Calculate the duty cycle
             #print("Duty Cycle: %f" % (
@@ -311,7 +340,7 @@ class AngularServo(Servo):
     """
     def __init__(self, pin=None, *, initial_angle=0.0, min_angle=-90,
                  max_angle=90, min_pulse_width=1/1000, max_pulse_width=2/1000,
-                 frame_width=20/1000, pin_factory=None):
+                 frame_width=20/1000, pin_factory=Factory()):
         self._min_angle = min_angle
         self._angular_range = max_angle - min_angle
         self._last_angle = None
@@ -372,7 +401,8 @@ class AngularServo(Servo):
     @angle.setter
     def angle(self, angle):
         if angle is None:
-            self._value = None
+            #self._value = None
+            self.value = None
         elif ((self.min_angle <= angle <= self.max_angle) or
               (self.max_angle <= angle <= self.min_angle)):
             self.value = (
@@ -393,4 +423,5 @@ class AngularServo(Servo):
                 f"{self.max_angle}, or None")
 
     def close(self):
+        self.angle = None
         print("Close servo!")
