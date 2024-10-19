@@ -1,3 +1,19 @@
+#
+# Servo and Angular Servo wrappers for Adafruit ServoKit: based on a library for controlling the Raspberry Pi's GPIO pins
+#
+# Copyright (c) 2015-2023 Dave Jones <dave@waveform.org.uk>
+# Copyright (c) 2022 gnicki2000 <89583687+gnicki2000@users.noreply.github.com>
+# Copyright (c) 2020 Fangchen Li <fangchen.li@outlook.com>
+# Copyright (c) 2015-2020 Ben Nuttall <ben@bennuttall.com>
+# Copyright (c) 2019 tuftii <3215045+tuftii@users.noreply.github.com>
+# Copyright (c) 2019 tuftii <pi@raspberrypi>
+# Copyright (c) 2019 Yisrael Dov Lebow 🐻 <lebow@lebowtech.com>
+# Copyright (c) 2019 Kosovan Sofiia <sofiia.kosovan@gmail.com>
+# Copyright (c) 2016-2019 Andrew Scheller <github@loowis.durge.org>
+# Copyright (c) 2016 Ian Harcombe <ian.harcombe@gmail.com>
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 from adafruit_servokit import ServoKit
 import config as c
 
@@ -168,9 +184,6 @@ class Servo:
             return None
         else:
             return self._value
-            #return (
-            #    ((self.pwm_device.pin.state - self._min_dc) / self._dc_range) *
-            #    self._value_range + self._min_value)
 
     @property
     def value(self):
@@ -197,7 +210,6 @@ class Servo:
     def value(self, value):
         #print("Servo Value: %s" % value)
         if value is None:
-            #self.pwm_device.pin.frequency = None
             self._value = None
         elif -1 <= value <= 1:
             self._value = value
@@ -382,7 +394,7 @@ class AngularServo(Servo):
     @angle.setter
     def angle(self, angle):
         if angle is None:
-            self._value = None
+            self.value = None
         elif ((self.min_angle <= angle <= self.max_angle) or
               (self.max_angle <= angle <= self.min_angle)):
             self.value = (
