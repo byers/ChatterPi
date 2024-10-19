@@ -13,10 +13,11 @@ from bandpassFilter import BPFilter
 import config as c
 
 c.update()
+
+from gpiozero import Device, AngularServo
 try:
-    #from gpiozero.pins.pigpio import PiGPIOFactory
-    from gpiozero import Device, AngularServo
-    #Device.pin_factory = PiGPIOFactory()
+    from gpiozero.pins.pigpio import PiGPIOFactory
+    Device.pin_factory = PiGPIOFactory()
 except:
     print("Unable to setup Pi GPIO pin factory: Audio!")
 

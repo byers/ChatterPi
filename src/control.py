@@ -4,10 +4,10 @@ Updated to fix bad calls to audio.play_audio Sat Dec 26 2020
 @author: Mike McGurrin
 """
 
+from gpiozero import Device, Button, DigitalOutputDevice
 try:
-    #from gpiozero.pins.pigpio import PiGPIOFactory
-    from gpiozero import Device, Button, DigitalOutputDevice
-    #Device.pin_factory = PiGPIOFactory()
+    from gpiozero.pins.pigpio import PiGPIOFactory
+    Device.pin_factory = PiGPIOFactory()
 except:
     print("Unable to setup Pi GPIO pin factory: Control!")
 
