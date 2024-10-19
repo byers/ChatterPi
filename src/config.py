@@ -44,7 +44,7 @@ def update():
 
 	cfg.read('config.ini')
 
-	SERVO_STYLE = cfg['SERVO']['STYLE']
+	SERVO_STYLE = cfg['SERVO'].get('STYLE', "default")
 	SERVO_MIN = int(cfg['SERVO']['SERVO_MIN'])
 	SERVO_MAX = int(cfg['SERVO']['SERVO_MAX'])
 	MIN_ANGLE = int(cfg['SERVO']['MIN_ANGLE'])
@@ -71,9 +71,10 @@ def update():
 	EYES_PIN = int(cfg['PINS']['EYES_PIN'])
 	TRIGGER_OUT_PIN = int(cfg['PINS']['TRIGGER_OUT_PIN'])
 
-	MQTT_HOST = cfg['MQTT']['HOST']
-	MQTT_PORT = int(cfg['MQTT']['PORT'])
-	MQTT_TOPIC = cfg['MQTT']['TOPIC']
-	MQTT_USER = cfg['MQTT']['USER']
-	MQTT_PWD = cfg['MQTT']['PWD']
+	if 'MQTT' in cfg:
+	    MQTT_HOST = cfg['MQTT']['HOST']
+	    MQTT_PORT = int(cfg['MQTT']['PORT'])
+	    MQTT_TOPIC = cfg['MQTT']['TOPIC']
+	    MQTT_USER = cfg['MQTT']['USER']
+	    MQTT_PWD = cfg['MQTT']['PWD']
 

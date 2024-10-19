@@ -16,12 +16,13 @@ def on_connect(client, userdata, flags, reason_code, properties):
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
 
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-client.on_connect = on_connect
-client.on_message = on_message
-print("MQTT: %s:%d, %s:%s" % (c.MQTT_HOST, c.MQTT_PORT, c.MQTT_USER, c.MQTT_PWD))
-client.username_pw_set(c.MQTT_USER, c.MQTT_PWD)
-client.connect(c.MQTT_HOST, c.MQTT_PORT, 60)
+if 'MQTT' in c.cfg:
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client.on_connect = on_connect
+    client.on_message = on_message
+    print("MQTT: %s:%d, %s:%s" % (c.MQTT_HOST, c.MQTT_PORT, c.MQTT_USER, c.MQTT_PWD))
+    client.username_pw_set(c.MQTT_USER, c.MQTT_PWD)
+    client.connect(c.MQTT_HOST, c.MQTT_PORT, 60)
 
 factory = None
 jaw_servo = None
@@ -51,15 +52,18 @@ elif c.SERVO_STYLE.lower() == 'pololu':
     # Turn on PWM LED
     factory._controller.setTarget(11,2000*4)
 
-# Set MQTT client for publishing
-jaw_servo.mqtt = client
+if 'MQTT' in c.cfg:
+    # Set MQTT client for publishing
+    jaw_servo.mqtt = client
+    client.loop_start()
 
-client.loop_start()
 time.sleep(1)
 a = audio.AUDIO(None, jaw_servo)
 a.negate_angle(True)
 a.play_vocal_track("./vocals/v01.wav")
-client.loop_stop()
+
+if 'MQTT' in c.cfg:
+    client.loop_stop()
 
 if c.SERVO_STYLE.lower() == 'servokit':
     print("Cleanup ServoKit")
