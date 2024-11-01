@@ -22,12 +22,14 @@ from dataclasses import dataclass
 
 # Function for callbacks before and after ambient sound
 def pre_ambient(controller):
+   # Run script to do motion (use loop) during ambient sound
    controller.runScriptSub(0)
 
 def post_ambient(controller):
+   # Stop the currently running script
    controller.stopScript()
-   # Set the head swivel servo to front
-   controller.setTarget(2, 1500*4)
+   # Run script to set prop into neutral position for talking
+   controller.runScriptSub(1)
 
 @dataclass
 class ServoLink:
