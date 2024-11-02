@@ -17,6 +17,16 @@
 from adafruit_servokit import ServoKit
 import config as c
 
+# Function for callbacks before and after ambient sound
+def pre_ambient(controller):
+   print("Pre Ambient Function")
+   # Run script to do motion (use loop) during ambient sound
+
+def post_ambient(controller):
+   print("Post Ambient Function")
+   # Stop the currently running script
+   # Run script to set prop into neutral position for talking
+
 class Factory:
     def __init__(self, nchannels=16):
         self._controller = ServoKit(channels=nchannels)

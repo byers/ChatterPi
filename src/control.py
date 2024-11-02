@@ -26,6 +26,7 @@ triggerOut = DigitalOutputDevice(c.TRIGGER_OUT_PIN)
 eyesPin = DigitalOutputDevice(c.EYES_PIN)
 
 if c.SERVO_STYLE.lower() == "pololu":
+    print("Pololu Servo Controller")
     import pololu
     factory = pololu.Factory()
     eyesPin = pololu.EyesPinAdapter(factory.create(c.EYES_PIN))
@@ -43,14 +44,24 @@ if c.SERVO_STYLE.lower() == "pololu":
     a.set_post_ambient(pololu.post_ambient)
     a.negate_angle(True)
 elif c.SERVO_STYLE.lower() == "servokit":
+    print("ServoKit Controller")
     import servoKit
+    factory = servoKit.Factory()
     jaw_servo = servoKit.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
-        max_pulse_width=c.SERVO_MAX/(1*10**6))
+        max_pulse_width=c.SERVO_MAX/(1*10**6),
+        pin_factory = factory)
     a = audio.AUDIO(sys.modules[__name__], jaw_servo)
+    a.set_servo_control(factory._controller)
+    a.set_pre_ambient(servoKit.pre_ambient)
+    a.set_post_ambient(servoKit.post_ambient)
     a.negate_angle(True)
+else:
+    print("Default PI Controller")
+    # Use default PI control for jaw servo
+    a = audio.AUDIO(sys.modules[__name__])
 
 ambient_interrupt = False   # set to True when timer goes off or PIR triggered
 trigger_time = time.time()
