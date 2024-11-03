@@ -2,7 +2,6 @@
 # Servo and Angular Servo wrappers for Adafruit ServoKit: based on a library for controlling the Raspberry Pi's GPIO pins
 #
 from adafruit_servokit import ServoKit
-import config as c
 
 # Function for callbacks before and after ambient sound
 def pre_ambient(controller):
@@ -19,8 +18,8 @@ class ServoAdapter:
         self._servo = servo
         self._pin = pin
 
-    def set_target(self, fraction, pulse_width):
-        if pulse_width is None:
+    def set_target(self, fraction, pulse_width = None):
+        if fraction is None:
             print("Target None: %d" % (self._pin))
             # NOTE: TBD
             #self._controller.setTarget(self._servo.pin, 0)
@@ -30,6 +29,9 @@ class ServoAdapter:
     def set_pulse_width_range(self, min_pulse_width, max_pulse_width):
         print("Set Pulse Width Range: [%d, %d]" % (min_pulse_width, max_pulse_width))
         self._servo.set_pulse_width_range(min_pulse_width, max_pulse_width)
+
+    def close(self):
+        print("ServoKit servo close.")
 
 class Factory:
     def __init__(self, nchannels=16):

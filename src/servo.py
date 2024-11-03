@@ -407,4 +407,5 @@ class AngularServo(Servo):
                 f"{self.max_angle}, or None")
 
     def close(self):
+        self._servo.close()
         print("Close servo!")
