@@ -25,7 +25,7 @@ class ServoAdapter:
     def set_target(self, fraction, pulse_width):
         if pulse_width is None:
             print("Target None: %d" % (self._pin))
-            self._controller.setTarget(self._servo.pin, 0)
+            self._controller.setTarget(self._pin, 0)
         else:
             # Covert to quarter microseconds for Pololu
             pololu_pulse_width = pulse_width * 4 * 1000000
@@ -34,6 +34,10 @@ class ServoAdapter:
 
     def set_pulse_width_range(self, min_pulse_width, max_pulse_width):
         print("Set Pulse Width Range: [%d, %d]" % (min_pulse_width, max_pulse_width))
+
+    def close(self):
+        print("Pololu servo close.")
+        self.set_target(0, None)
 
 class Factory:
     def __init__(self, port = "/dev/ttyACM0"):
