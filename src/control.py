@@ -17,6 +17,7 @@ import config as c
 import tracks as t
 import audio
 import sys
+import servo
 
 tracks = t.Tracks()
 
@@ -30,7 +31,7 @@ if c.SERVO_STYLE.lower() == "pololu":
     import pololu
     factory = pololu.Factory()
     eyesPin = pololu.EyesPinAdapter(factory.create(c.EYES_PIN))
-    jaw_servo = pololu.AngularServo(c.JAW_PIN,
+    jaw_servo = servo.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
@@ -47,7 +48,7 @@ elif c.SERVO_STYLE.lower() == "servokit":
     print("ServoKit Controller")
     import servoKit
     factory = servoKit.Factory()
-    jaw_servo = servoKit.AngularServo(c.JAW_PIN,
+    jaw_servo = servo.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),

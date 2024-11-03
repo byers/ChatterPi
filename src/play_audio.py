@@ -1,6 +1,7 @@
 import time
 import audio
 import config as c
+import servo
 
 import paho.mqtt.client as mqtt
 
@@ -31,7 +32,7 @@ if c.SERVO_STYLE.lower() == 'servokit':
     print("Using ServoKit!")
     factory = servoKit.Factory()
     # Setup servo to use with audio processor
-    jaw_servo = servoKit.AngularServo(c.JAW_PIN,
+    jaw_servo = servo.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
@@ -41,7 +42,7 @@ elif c.SERVO_STYLE.lower() == 'pololu':
     import pololu
     print("Using Pololu!")
     factory = pololu.Factory()
-    jaw_servo = pololu.AngularServo(c.JAW_PIN,
+    jaw_servo = servo.AngularServo(c.JAW_PIN,
         min_angle=c.MIN_ANGLE,
         max_angle=-c.MAX_ANGLE, initial_angle=None,
         min_pulse_width=c.SERVO_MIN/(1*10**6),
@@ -60,7 +61,7 @@ if 'MQTT' in c.cfg:
 time.sleep(1)
 a = audio.AUDIO(None, jaw_servo)
 a.negate_angle(True)
-a.play_vocal_track("./vocals/v01.wav")
+a.play_vocal_track("./vocals/v06.wav")
 
 if 'MQTT' in c.cfg:
     client.loop_stop()
