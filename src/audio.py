@@ -226,7 +226,7 @@ class AUDIO:
             self.stream.stop_stream()
             self.stream.close()
             wf.close()
-            if self._servo_control and self._post_ambient:
+            if self._servo_control and callable(self._post_ambient):
                 print("Running Post Ambient function")
                 self._post_ambient(self._servo_control)
             
@@ -234,7 +234,7 @@ class AUDIO:
             normalEnd()
             self.p.terminate()
             self.jaw.close()
-            if self._servo_control and self._post_ambient:
+            if self._servo_control and callable(self._post_ambient):
                 print("Running Post Ambient function")
                 self._post_ambient(self._servo_control)
             
@@ -250,7 +250,7 @@ class AUDIO:
                         output=True,
                         stream_callback=ambientCallback)  
 
-            if self._servo_control and self._pre_ambient:
+            if self._servo_control and callable(self._pre_ambient):
                 print("Running Pre Ambient function")
                 self._pre_ambient(self._servo_control)
             print("Playing Ambient...", )
